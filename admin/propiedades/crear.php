@@ -1,7 +1,10 @@
 <?php
 require '../../includes/config/database.php';
 $db = conectarDB();
-var_dump($db);
+
+//consultar para obtener los vendedores
+$consulta = "SELECT * FROM vendedores";
+$resultado = mysqli_query($db, $consulta);
 
 //Arreglo con mensaje de errores
 $errores = [];
@@ -14,17 +17,18 @@ $habitacion = '';
 $banio = '';
 $estacionamiento = '';
 $vendedorId = '';
+$creado = date('Y-m-d');
 
 //Ejecuta el codigo luego de que el usuario envio el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $titulo = $_POST['titulo'];
-$precio = $_POST['precio'];
-$descripcion = $_POST['descripcion'];
-$habitacion = $_POST['habitacion'];
-$banio = $_POST['banio'];
-$estacionamiento = $_POST['estacionamiento'];
-$vendedorId = $_POST['vendedor'];
+    $titulo = mysqli_real_escape_string($db, $_POST['titulo']);
+    $precio = mysqli_real_escape_string($db, $_POST['precio']);
+    $descripcion = mysqli_real_escape_string($db, $_POST['descripcion']);
+    $habitacion = mysqli_real_escape_string($db, $_POST['habitacion']);
+    $banio = mysqli_real_escape_string($db, $_POST['banio']);
+    $estacionamiento = mysqli_real_escape_string($db, $_POST['estacionamiento']);
+    $vendedorId = mysqli_real_escape_string($db, $_POST['vendedor']);
 
     //validar
     if (!$titulo) {
@@ -55,14 +59,15 @@ $vendedorId = $_POST['vendedor'];
 
     if (empty($errores)) {
         //insert
-        $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitacion, banio, estacionamiento, vendedores_id )
-    VALUES ( '$titulo', '$precio', '$descripcion', '$habitacion', '$banio', '$estacionamiento', '$vendedorId' ) ";
+        $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitacion, banio, estacionamiento, creado, vendedores_id )
+    VALUES ( '$titulo', '$precio', '$descripcion', '$habitacion', '$banio', '$estacionamiento', '$creado', '$vendedorId' ) ";
 
         //echo $query;
         $resultado = mysqli_query($db, $query);
 
         if ($resultado) {
-            echo "Insertado Correctamente";
+            //redireccionar al index de admin
+            header('Location: /admin');
         }
     }
 }
@@ -86,16 +91,16 @@ incluirTemplate('header');
             <legend>Informacion General</legend>
 
             <label for="titulo">Titulo:</label>
-            <input name="titulo" type="text" id="titulo" placeholder="Titulo de tu Propiedad" value="<?php echo $titulo;?>">
+            <input name="titulo" type="text" id="titulo" placeholder="Titulo de tu Propiedad" value="<?php echo $titulo; ?>">
 
             <label for="precio">Precio:</label>
-            <input name="precio" type="number" id="precio" placeholder="Precio de tu Propiedad" value="<?php echo $precio;?>">
+            <input name="precio" type="number" id="precio" placeholder="Precio de tu Propiedad" value="<?php echo $precio; ?>">
 
             <label for="imagen">Imagen:</label>
             <input type="file" id="imagen" accept="image/jpeg, image/png">
 
             <label for="descripcion">Descripcion:</label>
-            <textarea name="descripcion" id="descripcion"><?php echo $descripcion;?></textarea>
+            <textarea name="descripcion" id="descripcion"><?php echo $descripcion; ?></textarea>
 
         </fieldset>
 
@@ -103,13 +108,13 @@ incluirTemplate('header');
             <legend>Informacion Propiedad</legend>
 
             <label for="habitacion">Habitaciones:</label>
-            <input name="habitacion" type="number" id="habitacion" placeholder="Ej: 3" min="1" max="9" value="<?php echo $habitacion;?>">
+            <input name="habitacion" type="number" id="habitacion" placeholder="Ej: 3" min="1" max="9" value="<?php echo $habitacion; ?>">
 
             <label for="banio">Baños:</label>
-            <input name="banio" type="number" id="banio" placeholder="Ej: 3" min="1" max="9" value="<?php echo $banio;?>">
+            <input name="banio" type="number" id="banio" placeholder="Ej: 3" min="1" max="9" value="<?php echo $banio; ?>">
 
             <label for="estacionamiento">Estacionamiento:</label>
-            <input name="estacionamiento" type="number" id="estacionamiento" placeholder="Ej: 3" min="1" max="9" value="<?php echo $estacionamiento;?>">
+            <input name="estacionamiento" type="number" id="estacionamiento" placeholder="Ej: 3" min="1" max="9" value="<?php echo $estacionamiento; ?>">
         </fieldset>
 
         <fieldset>
@@ -117,8 +122,9 @@ incluirTemplate('header');
 
             <select name="vendedor">
                 <option value="">-Elija un Vendedor-</option>
-                <option value="1">Matias</option>
-                <option value="2">Mael</option>
+                <?php while ($row = mysqli_fetch_assoc($resultado)): ?>
+                    <option <?php echo $vendedorId === $row['id'] ? 'selected' : ''; ?> value="<?php echo $row['id'] ?>"><?php echo $row['nombre'] . " " . $row['apellido'] ?></option>
+                <?php endwhile; ?>
             </select>
         </fieldset>
 
