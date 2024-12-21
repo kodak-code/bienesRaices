@@ -1,45 +1,60 @@
 <?php
 
+$id = $_GET['id'];
+$id = filter_var($id, FILTER_VALIDATE_INT);
+
+if(!$id) {
+    header('Location: /');
+}
+
+//importar la conexion
+require 'includes/config/database.php';
+$db = conectarDB();
+
+//consultar 
+$query = "SELECT * FROM propiedades WHERE id = $id";
+
+//obtener los resultados
+$resultado = mysqli_query($db, $query);
+
+if($resultado->num_rows === 0) {
+    header('Location: /');
+}
+
+$propiedad = mysqli_fetch_assoc($resultado);
+
 require 'includes/funciones.php';
 incluirTemplate('header');
 ?>
 <main class="contenedor seccion contenido-centrado">
-    <h1>Casa en Venta frente al bosque</h1>
+    <h1><?php echo $propiedad['titulo']; ?></h1>
 
-    <picture>
-        <source srcset="./build/img/destacada.webp" type="image/webp">
-        <source srcset="./build/img/destacada.jpg" type="image/jpeg">
-        <img src="./build/img/destacada.jpg" alt="Imagen de la Propiedad" loading="lazy">
-    </picture>
+    <img src="/imagenes/<?php echo $propiedad['imagen']; ?>" alt="Imagen de la Propiedad" loading="lazy">
+
 
     <div class="resumen-propiedad">
-        <p class="precio">$3,000,000</p>
+        <p class="precio">$<?php echo $propiedad['precio']; ?></p>
 
         <ul class="iconos-caracteristicas">
             <li>
                 <img class="icono" src="./build/img/icono_wc.svg" alt="icono wc" loading="lazy">
-                <p>3</p>
+                <p><?php echo $propiedad['banio']; ?></p>
             </li>
             <li>
                 <img class="icono" src="./build/img/icono_estacionamiento.svg" alt="icono estacionamiento" loading="lazy">
-                <p>3</p>
+                <p><?php echo $propiedad['estacionamiento']; ?></p>
             </li>
             <li>
                 <img class="icono" src="./build/img/icono_dormitorio.svg" alt="icono dormitorio" loading="lazy">
-                <p>4</p>
+                <p><?php echo $propiedad['habitacion']; ?></p>
             </li>
         </ul>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Rerum explicabo veniam voluptatibus nemo.
-            Ea ad, esse, vero expedita maxime nobis repellat aut aliquam inventore veniam consectetur rerum nemo.
-            Saepe, suscipit.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Rerum explicabo veniam
-            voluptatibus nemo.
-            Ea ad, esse.</p>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Rerum explicabo veniam voluptatibus nemo.
-            Ea ad, esse, vero expedita maxime nobis repellat aut aliquam inventore veniam consectetur rerum nemo.
-            Saepe, suscipit.</p>
+        <p><?php echo $propiedad['descripcion']; ?></p>
     </div>
 </main>
 
 <?php
+//cerrar la conexion
+mysqli_close($db);
 incluirTemplate('footer');
 ?>
