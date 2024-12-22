@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     menu();
-    modoOscuro();
+    //modoOscuro();
 
 });
 function menu() {
