@@ -1,14 +1,15 @@
 <?php
 
-require '../../includes/funciones.php';
+require '../../includes/app.php';
 
-$auth = estaAutenticado();
+use App\Propiedad;
 
-if(!$auth) {
-    header('Location: /');
-}
+$propiedad = new Propiedad();
+debugear($propiedad);
 
-require '../../includes/config/database.php';
+estaAutenticado();
+
+
 $db = conectarDB();
 
 //consultar para obtener los vendedores

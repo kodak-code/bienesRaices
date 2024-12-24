@@ -1,0 +1,17 @@
+{
+    "name": "matia/bienes-raices",
+    "description": "bienesraices con POO",
+    "type": "project",
+    "authors": [
+        {
+            "name": "kodak code",
+            "email": "matiasmamani163@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\" : "./class"
+        }
+    }
+}
