@@ -5,10 +5,12 @@ ini_set('display_errors', '1');
 require '../includes/app.php';
 estaAutenticado();
 use App\Propiedad;
+use App\Vendedor;
 
 // Metodo para obtener todas las propiedades utilizando active record
 $propiedades = Propiedad::all();
-
+$vendedores = Vendedor::all();
+debugear($vendedores);
 
 //mensaje condicional
 $resultado = $_GET['resultado'] ?? null; //si no existe le asigna null
@@ -18,21 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = filter_var($id, FILTER_VALIDATE_INT);
 
     if ($id) {
-
-        //eliminar el archivo
-        $query = "SELECT imagen FROM propiedades WHERE id = $id";
-        $resultado = mysqli_query($db, $query);
-        $propiedad = mysqli_fetch_assoc($resultado);
-
-        unlink('../imagenes/' . $propiedad['imagen']);
-
-        //eliminar la propiedad
-        $query = "DELETE FROM propiedades WHERE id = $id ";
-        $resultado = mysqli_query($db, $query);
-
-        if ($resultado) {
-            header('Location: /admin?resultado=3');
-        }
+        $propiedad = Propiedad::find($id);
+        $propiedad->eliminar();
     }
 }
 

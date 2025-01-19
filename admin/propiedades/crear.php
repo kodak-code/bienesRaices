@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $propiedad->setImagen($nombreImagen);
     }
 
+    // validar
     $errores = $propiedad->validar();
 
 
@@ -50,19 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mkdir(CARPETA_IMAGENES);
         }
 
-        //subir imagen
-
-        // sin Intervention Image:
-        //move_uploaded_file($imagen['tmp_name'], CARPETA_IMAGENES . $nombreImagen);
-
+        //SUBIR IMAGEN
         //Guardar Imagen con Intervention Image COMPOSER
         $imagen->save(CARPETA_IMAGENES . $nombreImagen);
 
-        $resultado = $propiedad->guardar();
-        if ($resultado) {
-            //redireccionar al index de admin
-            header('Location: /admin?resultado=1');
-        }
+        $propiedad->guardar();
+        
     }
 }
 
