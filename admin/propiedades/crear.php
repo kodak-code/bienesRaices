@@ -9,18 +9,15 @@ ini_set('display_errors', '1');
 require '../../includes/app.php';
 
 use App\Propiedad;
+use App\Vendedor;
 use Intervention\Image\Drivers\Gd\Driver;
 
 estaAutenticado();
 
-
-$db = conectarDB();
-
 $propiedad = new Propiedad;
 
-//consultar para obtener los vendedores
-$consulta = "SELECT * FROM vendedores";
-$resultado = mysqli_query($db, $consulta);
+// Consulta para obtener todos los vendedores
+$vendedores = Vendedor::all();
 
 //Arreglo con mensaje de errores
 $errores = Propiedad::getErrores();

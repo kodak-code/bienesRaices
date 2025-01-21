@@ -13,17 +13,7 @@ class ActiveRecord
     //Errores
     protected static $errores = [];
 
-    //visibilidad de los atributos
-    public $id;
-    public $titulo;
-    public $precio;
-    public $imagen;
-    public $descripcion;
-    public $habitacion;
-    public $banio;
-    public $estacionamiento;
-    public $creado;
-    public $vendedorId;
+
 
 
     //Definir la conexion a la BD
@@ -36,10 +26,10 @@ class ActiveRecord
     public function guardar()
     {
         if (!is_null($this->id)) {
-            // actualizar
+            // actualizar si es que hay un ID previamente
             $this->actualizar();
         } else {
-            // crear nuevo registro
+            // crear nuevo registro si no hay ID previo
             $this->crear();
         }
     }
@@ -60,7 +50,7 @@ class ActiveRecord
         // Mensaje de exito
         if ($resultado) {
             //redireccionar al index de admin
-            header('Location: /admin?resultado=1');
+            header('Location: /admin?resultado=1'); // mensaje de exito
         }
     }
 
@@ -102,7 +92,7 @@ class ActiveRecord
     public function atributos()
     {
         $atributos = [];
-        foreach (self::$columnasDB as $columna) {
+        foreach (static::$columnasDB as $columna) {
             if ($columna === 'id') continue; // ignora el id y continua con el resto de las columnas
             $atributos[$columna] =  $this->$columna;
         }
@@ -124,39 +114,14 @@ class ActiveRecord
     //Validacion
     public static function getErrores()
     {
-        return self::$errores;
+        return static::$errores;
     }
 
     public function validar()
     {
-        //validar
-        if (!$this->titulo) {
-            self::$errores[] = 'Debe agregar un titulo';
-        }
-        if (!$this->precio) {
-            self::$errores[] = 'Debe agregar un precio';
-        }
-        if (strlen($this->descripcion) < 50) {
-            self::$errores[] = 'Debe agregar una descripcion';
-        }
-        if (!$this->habitacion) {
-            self::$errores[] = 'Debe agregar un numero de  habitaciones';
-        }
-        if (!$this->banio) {
-            self::$errores[] = 'Debe agregar una cantidad de baños';
-        }
-        if (!$this->estacionamiento) {
-            self::$errores[] = 'Debe agregar una cantidad de estacionamientos';
-        }
-        if (!$this->vendedorId) {
-            self::$errores[] = 'Debe elegir un vendedor';
-        }
-
-        if (!$this->imagen) {
-            self::$errores[] = 'La imagen es obligatoria';
-        }
-
-        return self::$errores;
+        // Cada vez que validemos limpiamos el arreglo
+        static::$errores = [];
+        return static::$errores;
     }
 
     // Subida de archivo
@@ -193,6 +158,15 @@ class ActiveRecord
         return $resultado;
     }
 
+    //Obtiene determinado numero de registros
+    public static function get($cantidad)
+    {
+        $query = "SELECT * FROM " . static::$tabla . " LIMIT " . $cantidad;
+        $resultado = self::consultarSQL($query);
+
+        return $resultado;
+    }
+
     // Buscar un registro por su ID
     public static function find($id)
     {
@@ -209,10 +183,10 @@ class ActiveRecord
         //iterar en los resultados
         $array = [];
         while ($registro = $resultado->fetch_assoc()) {
-            $array[] = self::crearOBJ($registro);
+            $array[] = static::crearOBJ($registro); // static ya que se debe crear el obj de propiedad o vendedor
         }
 
-        //Liberar la memoria 
+        //Liberar la memoria con obj
         $resultado->free();
 
         //Retornar los resultados
